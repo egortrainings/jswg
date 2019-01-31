@@ -1,6 +1,7 @@
 'use strict';
 
 const world = require('../po/world');
+const browserConfigs = require('../data/browserConfigs');
 
 const leftNavBarClick = async (item) => {
     const HomePage = world["Home Page"];
@@ -15,7 +16,21 @@ const leftNavBarClick = async (item) => {
     });
     await targetItem[0].click();
 };
+const getBrowser = (browserName, instances) =>{
+    if (!browserName) {
+        browserName = 'chrome';
+    };
+
+    const browser = browserConfigs[browserName];
+    if (instances) {
+        browser.maxInstances = instances;
+        browser.shardTestFiles = true;
+    };
+    console.log(browser);
+    return browser;
+};
 
 module.exports = {
-    leftNavBarClick
+    leftNavBarClick,
+    getBrowser
 };

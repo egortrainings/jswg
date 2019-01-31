@@ -3,19 +3,11 @@ const path = require("path");
 const yargs = require("yargs").argv;
 const fs = require("fs");
 const defaultTimeout = 40 * 1000;
+const utils = require('./utils/utils');
 
 exports.config = {
     seleniumAddress: 'http://localhost:4444/wd/hub',
-    capabilities: {
-        browserName: 'chrome',
-        chromeOptions: {
-            args: ['disable-infobars', 'disable-gpu',
-                'test-type=browser', 'disable-notifications', 'incognito',
-                'disable-application-cache']
-        },
-        shardTestFiles: false,
-        maxInstances: 2,
-    },
+    capabilities: utils.getBrowser(yargs.br, yargs.inst),
     restartBrowserBetweenTests: true,
     specs: [
         `e2e/${yargs.tag || "*/*.js"}`
@@ -28,7 +20,7 @@ exports.config = {
         const session = await global.browser.getSession();
         global.browser.params.sessionId = await session.getId();
         browser.ignoreSynchronization = true;
-        
+
         let originalAddExpectationResult = jasmine.Spec.prototype.addExpectationResult;
         jasmine.Spec.prototype.addExpectationResult = function () {
             if (!arguments[0]) {
@@ -64,5 +56,8 @@ exports.config = {
     params: {
         sessionId: null,
         timeout: defaultTimeout
+    },
+    localSeleniumStandaloneOpts: {
+        jvmArgs: ["-Dwebdriver.ie.driver=node_modules/protractor/node_modules/webdriver-manager/selenium/IEDriverServer3.141.5.exe"] 
     },
 };
