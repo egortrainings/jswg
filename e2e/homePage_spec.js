@@ -1,25 +1,31 @@
 const utils = require("../utils/utils");
 const world = require("../po/world");
 const outline = require("../utils/outline");
+const introSlides = require("../data/homePage/introSlideData");
+const parser = require('../utils/poParser');
+const EC = protractor.ExpectedConditions;
 
-describe("ELSE, DEV env, Header testing", () => {
 
-    describe("ELSE, DEV env, Test cases for Header Elements per User Role", () => {
+describe(`Verify Home page`, () => {
+    beforeEach(async () => {
+        await browser.driver.get("https://wargaming.com/en/");
+    });
 
-        outline(usersHeaderElementsList, (User) => {
-            describe(`Verify Header Elements for: ${User.userName}`, () => {
-                beforeEach(async () => {
-                    await utils.loginAs(User.userName);
+    describe(`Verify Intro section`, () => {
+        outline(introSlides, (slide) => {
+            describe(`Verify elements for Slide: ${slide.number}`, () => {
+                console.log(slide);
+                it(`Verify Image for Slide: ${slide.number}`, async () => {
+                    const paging = world["Home Page"].introSlide.paging;
+                    await browser.wait(EC.visibilityOf(element(by.css(paging))), browser.params.timeout, "Paging is not visible");
+                    await element(by.css(paging.pages)).click();
+
+                    // it(`Verify Intro slide `, async () => {
+                    //     utils.leftNavBarClick('Careers');
+                    //     expect(2).toBe(3);
                 });
-                outline(User.header_elements, (element) => {
-                    it(`Role: ${User.userName}. Verify that element is present in Header: ${element} `, async () => {
-                        let elementDetails = headerElementsList.filter(el => el.name === element)[0];
-                        await browser.wait(utils.ECHelper(parser.parser(`Home Page > Header > ${elementDetails.element}`), "present"), browser.params.timeout, `HomePage > Header > ${elementDetails.name} is not present.`);
-                    });
-                });
+
             });
         });
     });
-
 });
-

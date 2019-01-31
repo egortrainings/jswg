@@ -3,14 +3,28 @@ const path = require("path");
 const yargs = require("yargs").argv;
 const fs = require("fs");
 const defaultTimeout = 40 * 1000;
-const utils = require('./utils/utils');
+const browserConfigs = require('./data/browserConfigs');
+//const utils = require('./utils/utils');
 
+const getBrowser = (browserName, instances) =>{
+    if (!browserName) {
+        browserName = 'chrome';
+    };
+
+    const browser = browserConfigs[browserName];
+    if (instances) {
+        browser.maxInstances = instances;
+        browser.shardTestFiles = true;
+    };
+    console.log(browser);
+    return browser;
+};
 exports.config = {
     seleniumAddress: 'http://localhost:4444/wd/hub',
-    capabilities: utils.getBrowser(yargs.br, yargs.inst),
-    restartBrowserBetweenTests: true,
+    capabilities: getBrowser(yargs.br, yargs.inst),
+    restartBrowserBetweenTests: false,
     specs: [
-        `e2e/${yargs.tag || "*/*.js"}`
+        `e2e/${yargs.tag || "*.js"}`
     ],
 
     plugins: [
@@ -21,25 +35,20 @@ exports.config = {
         global.browser.params.sessionId = await session.getId();
         browser.ignoreSynchronization = true;
 
-        let originalAddExpectationResult = jasmine.Spec.prototype.addExpectationResult;
-        jasmine.Spec.prototype.addExpectationResult = function () {
-            if (!arguments[0]) {
-                browser.takeScreenshot().then(function (png) {
-                    allure.createAttachment('Screenshot', function () {
-                        return new Buffer(png, 'base64')
-                    }, 'image/png')();
-                })
-            }
-            return originalAddExpectationResult.apply(this, arguments);
-        };
+        jasmine.getEnv().afterEach(function (done) {
+            browser.takeScreenshot().then(function (png) {
+                allure.createAttachment('Screenshot', function () {
+                    return new Buffer.from(png, 'base64')
+                }, 'image/png')();
+                done();
+            });
+        });
 
         const AllureReporter = require('jasmine-allure-reporter');
         jasmine.getEnv().addReporter(new AllureReporter({
             resultsDir: 'allure-results'
         }));
 
-        return global.browser.getProcessedConfig().then(function (config) {
-        });
     },
     beforeLaunch: function () {
     },
@@ -58,6 +67,6 @@ exports.config = {
         timeout: defaultTimeout
     },
     localSeleniumStandaloneOpts: {
-        jvmArgs: ["-Dwebdriver.ie.driver=node_modules/protractor/node_modules/webdriver-manager/selenium/IEDriverServer3.141.5.exe"] 
-    },
+        jvmArgs: ["-Dwebdriver.ie.driver=node_modules/protractor/node_modules/webdriver-manager/selenium/IEDriverServer3.141.5.exe"]
+    }
 };
