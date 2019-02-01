@@ -1,7 +1,8 @@
 const fs = require('fs');
 
 function rmDir(dirPath) {
-    try { const files = fs.readdirSync(dirPath); }
+    let files;
+    try {files = fs.readdirSync(dirPath); }
     catch (e) { return; }
     if (files.length > 0)
         for (let i = 0; i < files.length; i++) {

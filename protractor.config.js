@@ -40,7 +40,7 @@ exports.config = {
     beforeLaunch: function () {
         if (yargs.env === 'local') {
             rmDir.rmDir('./allure-results');
-            rmDir.rmDir('./allure-results');
+            rmDir.rmDir('./allure-report');
         };        
     },
     allScriptsTimeout: 200000,
