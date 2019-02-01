@@ -3,28 +3,41 @@ const world = require("../po/world");
 const outline = require("../utils/outline");
 const introSlides = require("../data/homePage/introSlideData");
 const parser = require('../utils/poParser');
-const EC = protractor.ExpectedConditions;
 
 
 describe(`Verify Home page`, () => {
     beforeEach(async () => {
-        await browser.driver.get("https://wargaming.com/en/");
+        await utils.openHome();
     });
 
     describe(`Verify Intro section`, () => {
-        outline(introSlides, (slide) => {
-            describe(`Verify elements for Slide: ${slide.number}`, () => {
-                console.log(slide);
-                it(`Verify Image for Slide: ${slide.number}`, async () => {
-                    const paging = world["Home Page"].introSlide.paging;
-                    await browser.wait(EC.visibilityOf(element(by.css(paging))), browser.params.timeout, "Paging is not visible");
-                    await element(by.css(paging.pages)).click();
+        outline(introSlides, (slideData) => {
+            describe(`Verify elements for Slide: ${slideData.number}`, () => {
+                const index = parseInt(slideData.number) - 1;
+                const sl = world["Home Page"].introSlide;
 
-                    // it(`Verify Intro slide `, async () => {
-                    //     utils.leftNavBarClick('Careers');
-                    //     expect(2).toBe(3);
+                beforeEach(async () => {
+                    const paging = sl.paging;
+                    await utils.waitElementVisible(paging.pagingDiv, 'Paging');
+                    await utils.clickElement(paging.pages, `slide button #${index}`, index);
                 });
 
+                it(`Verify Slide Image URL: ${slideData.number}`, async () => {
+                    await utils.expectElementAttr(sl.slideImage, 'style', slideData.imageUrl, `Slide image #${index}`, index);
+                });
+
+                // it(`Verify Slide Title: ${slideData.number}`, async () => {
+                //     await utils.expectElementText(sl.slideTitle, slideData.title, `Slide title #${index}`, index);
+                // });
+
+                // it(`Verify Slide note: ${slideData.number}`, async () => {
+                //     await utils.expectElementText(sl.slideNote, slideData.note, `Slide note #${index}`, index);
+                // });
+
+                // it(`Verify Slide button: ${slideData.number}`, async () => {
+                //     await utils.expectElementText(sl.slideBtn, slideData.button, `Slide button #${index}`, index);
+                // });
+                
             });
         });
     });

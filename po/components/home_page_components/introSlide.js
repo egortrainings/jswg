@@ -6,7 +6,7 @@ class introSlide {
                 this._baseSelector = baseSelector;
                 this.slidesList = `${this._baseSelector} .swiper-slide`;
                 this.slideImage = `${this.slidesList} .background`
-                this.slideNumber = `${this.slidesList} > span`;
+                this.slideNumber = `${this.slidesList} .trans > span`;
                 this.slideTitle = `${this.slidesList} h1 > span:nth-child(1)`;
                 this.slideNote = `${this.slidesList} p`;
                 this.slideBtn = `${this.slidesList} button`;         

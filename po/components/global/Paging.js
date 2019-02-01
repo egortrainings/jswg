@@ -3,11 +3,11 @@
 
 class Paging {
         constructor(baseSelector) {
-                this._baseSelector = baseSelector;
-                this.prev = `${this._baseSelector} .prev`;
-                this.pages = `${this._baseSelector} .circles span`;
-                this.next = `${this._baseSelector} .next`;
-                this.pagesTotal = `${this._baseSelector} .pages`;
+                this.pagingDiv = baseSelector;
+                this.prev = `${this.pagingDiv} .prev`;
+                this.pages = `${this.pagingDiv} .circles span`;
+                this.next = `${this.pagingDiv} .next`;
+                this.pagesTotal = `${this.pagingDiv} .pages`;
                 this.pagesCurrent = `${this.pagesTotal} .pages b`;
         };
 }

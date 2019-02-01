@@ -1,12 +1,12 @@
 'use strict';
 
 const HomePage = require('./pages/HomePage');
-const Careers = require('./pages/Careers');
+const CareersPage = require('./pages/CareersPage');
 
 class World {
 	constructor() {
 		this["Home Page"] = new HomePage();
-		this["Careers"] = new Careers();
+		this["Careers Page"] = new CareersPage();
 	}
 }
 

@@ -3,25 +3,13 @@ const path = require("path");
 const yargs = require("yargs").argv;
 const fs = require("fs");
 const defaultTimeout = 40 * 1000;
-const browserConfigs = require('./data/browserConfigs');
-//const utils = require('./utils/utils');
+const getBrowser = require('./utils/getBrowser');
+const rmDir = require('./utils/reportCleaner');
+const AllureReporter = require('jasmine-allure-reporter');
 
-const getBrowser = (browserName, instances) =>{
-    if (!browserName) {
-        browserName = 'chrome';
-    };
-
-    const browser = browserConfigs[browserName];
-    if (instances) {
-        browser.maxInstances = instances;
-        browser.shardTestFiles = true;
-    };
-    console.log(browser);
-    return browser;
-};
 exports.config = {
     seleniumAddress: 'http://localhost:4444/wd/hub',
-    capabilities: getBrowser(yargs.br, yargs.inst),
+    capabilities: getBrowser.getBrowser(yargs.br, yargs.inst),
     restartBrowserBetweenTests: false,
     specs: [
         `e2e/${yargs.tag || "*.js"}`
@@ -43,14 +31,17 @@ exports.config = {
                 done();
             });
         });
-
-        const AllureReporter = require('jasmine-allure-reporter');
+        
         jasmine.getEnv().addReporter(new AllureReporter({
             resultsDir: 'allure-results'
         }));
 
     },
     beforeLaunch: function () {
+        if (yargs.env === 'local') {
+            rmDir.rmDir('./allure-results');
+            rmDir.rmDir('./allure-results');
+        };        
     },
     allScriptsTimeout: 200000,
     getPageTimeout: 100000,
